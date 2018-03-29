@@ -52,6 +52,19 @@ describe "have_column_matcher" do
         expect( @matcher.failure_message_when_negated ).to eq "expected Item to not " + @matcher.description + explanation
       end
     end
+    describe "with options" do
+      it "should contain a description" do
+        @matcher = have_column :id, :type => Integer, :primary_key => true
+        expect( @matcher.description ).to eq "have a column :id with type Integer and options :primary_key => true"
+      end
+      it "should explicit option if different than expected" do
+        @matcher = have_column :id, :type => Integer, :primary_key => false
+        @matcher.matches? subject
+        explanation = " (type found: integer) but options :primary_key => true do not match"
+        expect( @matcher.failure_message ).to eq "expected Item to " + @matcher.description + explanation
+        expect( @matcher.failure_message_when_negated ).to eq "expected Item to not " + @matcher.description + explanation
+      end
+    end
     describe "on anonymous Sequel::Model class" do
       it "should set failure messages" do
         @matcher = have_column :password
@@ -79,6 +92,8 @@ describe "have_column_matcher" do
   end
 
   describe "matchers" do
+    it{ is_expected.to have_column(:id, :type => :integer, :auto_increment => true, primary_key: true) }
+    it{ is_expected.not_to have_column(:id, :type => :integer, :auto_increment => true, primary_key: false) }
     it{ is_expected.to have_column(:name) }
     it{ is_expected.to have_column(:name, :type => :string) }
     it{ is_expected.to have_column(:name, :type => String) }

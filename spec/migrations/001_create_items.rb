@@ -3,8 +3,9 @@ class CreateItems < Sequel::Migration
   def up
     create_table  :items do 
       primary_key :id
-      String      :name
-      Float       :price
+      String      :name, unique: true
+      Float       :price, index: true
+      index       [:name, :price]
     end
   end
 
